@@ -1,6 +1,7 @@
 import { signJWT } from '@/lib/jwt'
 import prisma from '@/lib/prisma'
 import { getErrorResponse } from '@/lib/utils'
+import bcrypt from 'bcryptjs'
 import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
@@ -11,9 +12,18 @@ export async function POST(req: NextRequest) {
 
       const { phone, OTP, cart } = await req.json()
 
-      const user = await prisma.user.update({
-         where: { phone: phone.toString().toLowerCase(), OTP },
-         data: { isPhoneVerified: true },
+      const user = await prisma.user.findFirstOrThrow({
+         where: { phone: phone.toString().toLowerCase() },
+      })
+
+      const isValid = await bcrypt.compare(OTP, user.OTP ?? '')
+      if (!isValid) {
+         return getErrorResponse(400, 'Invalid verification code')
+      }
+
+      await prisma.user.update({
+         where: { id: user.id },
+         data: { isPhoneVerified: true, OTP: null },
       })
 
       if (cart?.items?.length > 0) {
@@ -66,6 +76,7 @@ export async function POST(req: NextRequest) {
          path: '/',
          secure: process.env.NODE_ENV !== 'development',
          maxAge: tokenMaxAge,
+         sameSite: 'lax' as const,
       }
 
       const response = new NextResponse(

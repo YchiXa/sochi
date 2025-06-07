@@ -1,6 +1,7 @@
 import { signJWT } from '@/lib/jwt'
 import prisma from '@/lib/prisma'
 import { getErrorResponse } from '@/lib/utils'
+import bcrypt from 'bcryptjs'
 import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
@@ -18,7 +19,17 @@ export async function POST(req: NextRequest) {
       }
 
       const user = await prisma.owner.findFirstOrThrow({
-         where: { email, OTP },
+         where: { email },
+      })
+
+      const isValid = await bcrypt.compare(OTP, user.OTP ?? '')
+      if (!isValid) {
+         return getErrorResponse(400, 'Invalid verification code')
+      }
+
+      await prisma.owner.update({
+         where: { id: user.id },
+         data: { OTP: null },
       })
 
       const token = await signJWT(
@@ -34,6 +45,7 @@ export async function POST(req: NextRequest) {
          path: '/',
          secure: process.env.NODE_ENV !== 'development',
          maxAge: tokenMaxAge,
+         sameSite: 'lax' as const,
       }
 
       const response = new NextResponse(

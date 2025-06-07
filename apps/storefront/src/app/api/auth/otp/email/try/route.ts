@@ -3,6 +3,7 @@ import Mail from '@/emails/verify'
 import prisma from '@/lib/prisma'
 import { generateSerial } from '@/lib/serial'
 import { getErrorResponse } from '@/lib/utils'
+import bcrypt from 'bcryptjs'
 import { sendMail } from '@persepolis/mail'
 import { isEmailValid } from '@persepolis/regex'
 import { render } from '@react-email/render'
@@ -12,6 +13,7 @@ import { ZodError } from 'zod'
 export async function POST(req: NextRequest) {
    try {
       const OTP = generateSerial({})
+      const hashedOTP = await bcrypt.hash(OTP, 10)
 
       const { email } = await req.json()
 
@@ -19,11 +21,11 @@ export async function POST(req: NextRequest) {
          await prisma.user.upsert({
             where: { email: email.toString().toLowerCase() },
             update: {
-               OTP,
+               OTP: hashedOTP,
             },
             create: {
                email: email.toString().toLowerCase(),
-               OTP,
+               OTP: hashedOTP,
             },
          })
 

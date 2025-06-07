@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma'
 import { generateSerial } from '@/lib/serial'
 import { getErrorResponse } from '@/lib/utils'
+import bcrypt from 'bcryptjs'
 import { isIranianPhoneNumberValid } from '@persepolis/regex'
 import { sendTransactionalSMS } from '@persepolis/sms'
 import { NextRequest, NextResponse } from 'next/server'
@@ -9,6 +10,7 @@ import { ZodError } from 'zod'
 export async function POST(req: NextRequest) {
    try {
       const OTP = generateSerial({})
+      const hashedOTP = await bcrypt.hash(OTP, 10)
 
       const { phone } = await req.json()
 
@@ -17,11 +19,11 @@ export async function POST(req: NextRequest) {
          await prisma.user.upsert({
             where: { phone: phone.toString().toLowerCase() },
             update: {
-               OTP,
+               OTP: hashedOTP,
             },
             create: {
                phone: phone.toString().toLowerCase(),
-               OTP,
+               OTP: hashedOTP,
             },
          })
 
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest) {
             Parameters: [
                {
                   name: 'Code',
-                  value: '12345',
+                  value: OTP,
                },
             ],
          })
