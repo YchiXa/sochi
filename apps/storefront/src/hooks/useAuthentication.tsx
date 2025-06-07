@@ -9,13 +9,15 @@ export function useAuthenticated() {
    useEffect(() => {
       try {
          if (typeof window !== 'undefined' && window.localStorage) {
-            const cookies = document.cookie.split(';')
-            const loggedInCookie =
-               cookies
-                  .find((cookie) => cookie.startsWith('logged-in'))
-                  .split('=')[1] === 'true'
-
-            setAuthenticated(loggedInCookie ?? false)
+            const cookies = Object.fromEntries(
+               document.cookie
+                  .split('; ')
+                  .map((c) => {
+                     const [k, v] = c.split('=')
+                     return [k, v]
+                  })
+            )
+            setAuthenticated(cookies['logged-in'] === 'true')
          }
       } catch (error) {
          console.error({ error })
