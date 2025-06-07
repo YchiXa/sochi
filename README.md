@@ -57,7 +57,7 @@ Clone the repository.
 git clone https://github.com/sesto-dev/next-prisma-tailwind-ecommerce
 ```
 
-Navigate to each folder in the `apps` folder and and set the variables.
+Navigate to each folder in the `apps` folder and set the variables.
 
 ```sh
 cp .env.example .env
