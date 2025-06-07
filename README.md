@@ -54,7 +54,7 @@ You can [read more about environment variables here](https://nextjs.org/docs/bas
 Clone the repository.
 
 ```bash
-git clone https://github.com/sesto-dev/next-prisma-tailwind-ecommerce
+git clone https://github.com/YchiXa/sochi
 ```
 
 Navigate to each folder in the `apps` folder and set the variables.
