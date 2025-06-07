@@ -1,7 +1,7 @@
 import config from '@/config/site'
 import Mail from '@/emails/verify'
 import prisma from '@/lib/prisma'
-import { generateSerial } from '@/lib/serial'
+import { generateOTP } from '@persepolis/rng'
 import { getErrorResponse } from '@/lib/utils'
 import { sendMail } from '@persepolis/mail'
 import { isEmailValid } from '@persepolis/regex'
@@ -11,7 +11,7 @@ import { ZodError } from 'zod'
 
 export async function POST(req: NextRequest) {
    try {
-      const OTP = generateSerial({})
+      const OTP = generateOTP()
 
       const { email } = await req.json()
 

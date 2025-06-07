@@ -25,6 +25,7 @@
    },
    "homepage": "https://github.com/sesto-dev/next-prisma-tailwind-ecommerce#readme",
    "devDependencies": {
+      "@types/node": "^22.15.30",
       "typescript": "^5.2.2"
    },
    "peerDependencies": {

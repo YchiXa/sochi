@@ -1,10 +1,12 @@
+import { randomUUID } from 'crypto'
+
 const teamID = process.env.NEXT_PUBLIC_APPLE_TEAM_ID
 const clientID = process.env.NEXT_PUBLIC_APPLE_CLIENT_ID
 const redirectURI = process.env.NEXT_PUBLIC_URL + "/callback/apple"
-const state = "RANDOMLY_GENERATED_STATE"
 const clientSecret = process.env.APPLE_CLIENT_SECRET
 
 export function getAppleSignInURL() {
+  const state = randomUUID()
   return `https://appleid.apple.com/auth/authorize?response_type=code&client_id=${clientID}&redirect_uri=${redirectURI}&state=${state}&scope=name%20email`
 }
 

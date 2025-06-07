@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-import { generateSerial } from '@/lib/serial'
+import { generateOTP } from '@persepolis/rng'
 import { getErrorResponse } from '@/lib/utils'
 import { isIranianPhoneNumberValid } from '@persepolis/regex'
 import { sendTransactionalSMS } from '@persepolis/sms'
@@ -8,7 +8,7 @@ import { ZodError } from 'zod'
 
 export async function POST(req: NextRequest) {
    try {
-      const OTP = generateSerial({})
+      const OTP = generateOTP()
 
       const { phone } = await req.json()
 
